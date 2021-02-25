@@ -1,7 +1,7 @@
 {
-  "name": "wx-webpack-plugin",
+  "name": "wx-webpack-module-plugin",
   "version": "1.0.0",
-  "description": "搭配mpack使用的webpack插件，提取小程序公共模块",
+  "description": "一款webpack插件，用来提取小程序公共模块，适用于搭配webpack开发的小程序",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "author": "Sun Mengge",
@@ -14,6 +14,12 @@
     "LICENSE",
     "README.md",
     "dist/"
+  ],
+  "keywords": [
+    "小程序",
+    "wechat",
+    "webpack",
+    "plugin"
   ],
   "sideEffects": false,
   "devDependencies": {
