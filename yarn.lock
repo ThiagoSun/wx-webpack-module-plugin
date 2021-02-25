@@ -71,6 +71,13 @@
     resolve-global "1.0.0"
     yargs "^15.1.0"
 
+"@commitlint/config-conventional@^12.0.0":
+  version "12.0.0"
+  resolved "https://npm.xiaoheiban.cn/@commitlint%2fconfig-conventional/-/config-conventional-12.0.0.tgz#3244957b87b92dc2f4feb46059cdeb950783198f"
+  integrity sha1-MkSVe4e5LcL0/rRgWc3rlQeDGY8=
+  dependencies:
+    conventional-changelog-conventionalcommits "^4.3.1"
+
 "@commitlint/ensure@^11.0.0":
   version "11.0.0"
   resolved "https://npm.xiaoheiban.cn/@commitlint%2fensure/-/ensure-11.0.0.tgz#3e796b968ab5b72bc6f8a6040076406306c987fb"
@@ -752,6 +759,15 @@ conventional-changelog-angular@^5.0.0:
   integrity sha1-yXm4uSHL/iZALrPaW7/aAthlork=
   dependencies:
     compare-func "^2.0.0"
+    q "^1.5.1"
+
+conventional-changelog-conventionalcommits@^4.3.1:
+  version "4.5.0"
+  resolved "https://npm.xiaoheiban.cn/conventional-changelog-conventionalcommits/-/conventional-changelog-conventionalcommits-4.5.0.tgz#a02e0b06d11d342fdc0f00c91d78265ed0bc0a62"
+  integrity sha1-oC4LBtEdNC/cDwDJHXgmXtC8CmI=
+  dependencies:
+    compare-func "^2.0.0"
+    lodash "^4.17.15"
     q "^1.5.1"
 
 conventional-commits-parser@^3.0.0:
