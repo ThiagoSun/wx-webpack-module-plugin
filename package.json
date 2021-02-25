@@ -8,8 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist & rollup -c",
-    "dev": "rollup -c -w",
-    "postinstall": "husky install"
+    "dev": "rollup -c -w"
   },
   "files": [
     "LICENSE",
