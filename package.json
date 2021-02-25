@@ -16,10 +16,10 @@
     "dist/"
   ],
   "keywords": [
-    "小程序",
-    "wechat",
     "webpack",
-    "plugin"
+    "webpack-plugin",
+    "wechat",
+    "mini-program"
   ],
   "sideEffects": false,
   "devDependencies": {
@@ -28,6 +28,8 @@
     "@rollup/plugin-typescript": "^8.1.0",
     "@types/node": "^14.14.16",
     "@types/webpack": "^4.41.26",
+    "commitlint": "^11.0.0",
+    "husky": "^5.1.1",
     "rollup": "^2.35.1",
     "rollup-plugin-filesize": "^9.1.0",
     "rollup-plugin-progress": "^1.1.2",
@@ -37,5 +39,10 @@
   },
   "peerDependencies": {
     "webpack": ">=4.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
