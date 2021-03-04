@@ -1,7 +1,7 @@
 PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
-.PHONY: init clean build dev
+.PHONY: init clean build dev publish
 
 init:
 	yarn
@@ -17,7 +17,5 @@ dev:clean init
 
 publish: build
 	npm version patch
-	git add .
-	git commit -m "build: publish"
 	npm publish
 	git push
