@@ -1,6 +1,6 @@
 {
   "name": "wx-webpack-module-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "一款webpack插件，用来提取小程序公共模块，适用于搭配webpack开发的小程序",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
