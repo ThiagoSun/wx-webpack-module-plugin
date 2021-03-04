@@ -17,5 +17,7 @@ dev:clean init
 
 publish: build
 	npm version patch
+	ga .
+	git commit -m "build: publish"
 	npm publish
 	git push
