@@ -1,0 +1,5 @@
+dist
+.husky
+.eslintrc.js
+.prettierrc.js
+commitlint.config.js

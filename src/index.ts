@@ -6,7 +6,7 @@ import Asset = webpack.compilation.Asset;
 import Compiler = webpack.Compiler;
 import { ConcatSource } from 'webpack-sources';
 
-const path = require("path");
+const path = require('path');
 
 interface optionsType {
   libPaths: string[];
@@ -23,7 +23,7 @@ function replaceStart(searchValue: string, replaceValue: string): string {
   }
 }
 
-class WxWebpackPlugin {
+export default class WxWebpackModulePlugin {
   private state: {
     nodeModules: Module[];
     nodeModulesPath: string;
@@ -38,20 +38,24 @@ class WxWebpackPlugin {
     let nodeModulesOutputDir = options.nodeModulesOutputDir || defaultNodeModulesOutputDir;
     nodeModulesOutputDir = replaceStart.call(nodeModulesOutputDir, '.', '');
     nodeModulesOutputDir = replaceStart.call(nodeModulesOutputDir, '/', '');
-    nodeModulesOutputDir[nodeModulesOutputDir.length - 1] === '/' &&
-    (nodeModulesOutputDir = nodeModulesOutputDir.substr(0, nodeModulesOutputDir.length - 1));
+    if (nodeModulesOutputDir[nodeModulesOutputDir.length - 1] === '/') {
+      nodeModulesOutputDir = nodeModulesOutputDir.substr(0, nodeModulesOutputDir.length - 1);
+    }
 
     this.state = {
       nodeModules: [],
       nodeModulesPath: path.resolve(process.cwd(), 'node_modules'),
       utilModules: [],
-      utilModulesPaths: options?.libPaths?.filter(item => {
-        return item.indexOf('node_modules') === -1;
-      }).map(item => {
-        return path.resolve(process.cwd(), item);
-      }) || [],
+      utilModulesPaths:
+        options?.libPaths
+          ?.filter(item => {
+            return item.indexOf('node_modules') === -1;
+          })
+          .map(item => {
+            return path.resolve(process.cwd(), item);
+          }) || [],
       nodeModulesOutputDir,
-      options: options
+      options: options,
     };
   }
 
@@ -76,7 +80,7 @@ class WxWebpackPlugin {
       chunkName = moduleResource.split(dir)[1];
     }
     chunkName = chunkName.replace(path.extname(chunkName), '');
-    return `${prefix ? (prefix + (prefix[prefix.length - 1] === '/' ? '' : '/')) : ''}${chunkName}`;
+    return `${prefix ? prefix + (prefix[prefix.length - 1] === '/' ? '' : '/') : ''}${chunkName}`;
   }
 
   /**
@@ -91,7 +95,7 @@ class WxWebpackPlugin {
     const newChunkName = this.getNewChunkName(
       modulePath,
       modulePath.indexOf('node_modules/') >= 0 ? 'node_modules/' : this.state.utilModulesPaths,
-      namePrefix
+      namePrefix,
     );
     // @ts-ignore
     const newChunk = compilation.addChunk(newChunkName);
@@ -118,8 +122,10 @@ class WxWebpackPlugin {
     modules.forEach(module => {
       // @ts-ignore
       const modulePath = module.resource || module.context;
-      if (modulePath.indexOf(this.state.nodeModulesPath) >= 0
-        || modulePath.indexOf('node_modules/') >= 0) {
+      if (
+        modulePath.indexOf(this.state.nodeModulesPath) >= 0 ||
+        modulePath.indexOf('node_modules/') >= 0
+      ) {
         this.removeModulesAllChunks(module);
         if (modulePath.match(/\/moment\/locale/)) {
           return;
@@ -154,11 +160,11 @@ class WxWebpackPlugin {
    * @param asset
    * @param dependencies
    */
-  appendAssetContent (asset: Asset, dependencies: string[]) {
+  appendAssetContent(asset: Asset, dependencies: string[]) {
     // @ts-ignore
     const source = asset.source();
     const requireStatements = dependencies.map(item => {
-      return `require("${item}");`
+      return `require("${item}");`;
     });
     return new ConcatSource(...requireStatements, source);
   }
@@ -168,7 +174,7 @@ class WxWebpackPlugin {
    * @param assets
    * @param compilation
    */
-  appendRequireStatements (assets: { [k: string]: Asset }, compilation: Compilation) {
+  appendRequireStatements(assets: { [k: string]: Asset }, compilation: Compilation) {
     const chunks: Chunk[] = compilation.chunks;
     const modules: Module[] = compilation.modules;
 
@@ -198,16 +204,17 @@ class WxWebpackPlugin {
           if (!path.extname(dp.module.resource).match(/\.(ts|js|mjs)$/)) {
             return;
           }
-          // @ts-ignore
-          let requirePath = path.relative(path.dirname(module.resource), dp.module.resource)
+          let requirePath = path
+            // @ts-ignore
+            .relative(path.dirname(module.resource), dp.module.resource)
             .replace('node_modules', nodeModulesOutputDir)
             .replace(/\.(ts|mjs)/, '.js');
           // @ts-ignore
           if (module.resource.indexOf('/src') >= 0 && dp.module.resource.indexOf('/src') === -1) {
-            requirePath = requirePath.replace('../', '')
+            requirePath = requirePath.replace('../', '');
           }
           if (requireDependencies.indexOf(requirePath) === -1) {
-            requireDependencies.push(requirePath)
+            requireDependencies.push(requirePath);
           }
         });
       });
@@ -234,14 +241,18 @@ class WxWebpackPlugin {
             return;
           }
           let tempChunkName = `${nodeModulesOutputDir}${
-            reason.module.resource.split('node_modules')[1]}`;
+            reason.module.resource.split('node_modules')[1]
+          }`;
           tempChunkName = tempChunkName.replace(path.extname(tempChunkName), '');
-          // @ts-ignore
-          let tempModulePath = `${nodeModulesOutputDir}${module.resource.split('node_modules')[1]}`;
+          const tempModulePath = `${nodeModulesOutputDir}${
+            // @ts-ignore
+            module.resource.split('node_modules')[1]
+          }`;
           if (chunk.name !== tempChunkName) {
             return;
           }
-          const requirePath = path.relative(path.dirname(tempChunkName), tempModulePath)
+          const requirePath = path
+            .relative(path.dirname(tempChunkName), tempModulePath)
             .replace(/\.(ts|mjs)/, '.js');
           if (requireDependencies.indexOf(requirePath) === -1) {
             requireDependencies.push(requirePath);
@@ -251,12 +262,16 @@ class WxWebpackPlugin {
 
       if (requireDependencies.length > 0) {
         // @ts-ignore
-        assets[`${chunk.name}.js`] = this.appendAssetContent(assets[`${chunk.name}.js`], requireDependencies);
+        assets[`${chunk.name}.js`] = this.appendAssetContent(
+          assets[`${chunk.name}.js`],
+          requireDependencies,
+        );
       }
     });
 
     // 向app.js中插入require("runtime")
     // @ts-ignore
+    // eslint-disable-next-line no-useless-escape
     if (!assets['app.js'].source().match(/require\((\"|\')runtime(\.js)?(\"|\')\)/g)) {
       // @ts-ignore
       assets['app.js'] = this.appendAssetContent(assets['app.js'], ['runtime']);
@@ -267,23 +282,22 @@ class WxWebpackPlugin {
     compiler.hooks.environment.tap('WxWebpackPlugin', () => {
       // 修改webpack config，必须抽出runtime.js
       compiler.options.optimization.runtimeChunk = {
-        name: 'runtime'
-      }
+        name: 'runtime',
+      };
     });
 
     compiler.hooks.thisCompilation.tap('WxWebpackPlugin', (compilation: Compilation) => {
-
       compilation.hooks.optimizeModules.tap('WxWebpackPlugin', (modules: Module[]) => {
         this.iterateAllModules(modules);
       });
 
       compilation.hooks.optimizeChunks.tap('WxWebpackPlugin', (chunks: Chunk[]) => {
-        this.state.nodeModules.forEach(module => this.createNewChunkForModule(
-          compilation, module, this.state.nodeModulesOutputDir
-        ));
-        this.state.utilModules.forEach(module => this.createNewChunkForModule(
-          compilation, module, ''
-        ));
+        this.state.nodeModules.forEach(module =>
+          this.createNewChunkForModule(compilation, module, this.state.nodeModulesOutputDir),
+        );
+        this.state.utilModules.forEach(module =>
+          this.createNewChunkForModule(compilation, module, ''),
+        );
       });
 
       compilation.hooks.afterOptimizeChunks.tap('WxWebpackPlugin', (chunks: Chunk[]) => {
@@ -296,7 +310,4 @@ class WxWebpackPlugin {
       });
     });
   }
-
 }
-
-export default WxWebpackPlugin;
