@@ -279,19 +279,19 @@ export default class WxWebpackModulePlugin {
   }
 
   apply(compiler: Compiler) {
-    compiler.hooks.environment.tap('WxWebpackPlugin', () => {
+    compiler.hooks.environment.tap('WxWebpackModulePlugin', () => {
       // 修改webpack config，必须抽出runtime.js
       compiler.options.optimization.runtimeChunk = {
         name: 'runtime',
       };
     });
 
-    compiler.hooks.thisCompilation.tap('WxWebpackPlugin', (compilation: Compilation) => {
-      compilation.hooks.optimizeModules.tap('WxWebpackPlugin', (modules: Module[]) => {
+    compiler.hooks.thisCompilation.tap('WxWebpackModulePlugin', (compilation: Compilation) => {
+      compilation.hooks.optimizeModules.tap('WxWebpackModulePlugin', (modules: Module[]) => {
         this.iterateAllModules(modules);
       });
 
-      compilation.hooks.optimizeChunks.tap('WxWebpackPlugin', (chunks: Chunk[]) => {
+      compilation.hooks.optimizeChunks.tap('WxWebpackModulePlugin', (chunks: Chunk[]) => {
         this.state.nodeModules.forEach(module =>
           this.createNewChunkForModule(compilation, module, this.state.nodeModulesOutputDir),
         );
@@ -300,14 +300,17 @@ export default class WxWebpackModulePlugin {
         );
       });
 
-      compilation.hooks.afterOptimizeChunks.tap('WxWebpackPlugin', (chunks: Chunk[]) => {
+      compilation.hooks.afterOptimizeChunks.tap('WxWebpackModulePlugin', (chunks: Chunk[]) => {
         chunks.forEach(chunk => this.resolveChunkNameAfterOptimization(chunk));
       });
 
-      compilation.hooks.optimizeAssets.tapAsync('WxWebpackPlugin', (assets: any, callback) => {
-        this.appendRequireStatements(assets, compilation);
-        callback();
-      });
+      compilation.hooks.optimizeAssets.tapAsync(
+        'WxWebpackModulePlugin',
+        (assets: any, callback) => {
+          this.appendRequireStatements(assets, compilation);
+          callback();
+        },
+      );
     });
   }
 }
